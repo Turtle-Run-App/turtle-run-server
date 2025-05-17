@@ -1,12 +1,12 @@
 # 사용하려는 베이스 이미지 지정
 FROM openjdk:23-jdk
 
-CMD ["rm","-R", "./build/libs"]
+#CMD ["rm","-R", "./build/libs"]
 
 
 # 워크디렉토리 설정
 WORKDIR /app
-CMD ["./gradlew", "clean", "build"]
+#CMD ["./gradlew", "clean", "build"]
 
 
 # 애플리케이션 패키지 복사

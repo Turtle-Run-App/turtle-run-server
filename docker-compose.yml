@@ -25,9 +25,10 @@ services:
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/game
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/turtle-run-app-db
       SPRING_DATASOURCE_USERNAME: turtle-run-app-db
       SPRING_DATASOURCE_PASSWORD: turtle-run-app-db
+      TZ: Asia/Seoul
 
 volumes:
   db_data:
