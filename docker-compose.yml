@@ -2,21 +2,21 @@ version: '3'
 services:
   # PostgreSQL 서비스 설정
   db:
-    container_name: gamedb
+    container_name: turtle-run-app-db
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: game
-      POSTGRES_USER: game
-      POSTGRES_PASSWORD: game
+      POSTGRES_DB: turtle-run-app-db
+      POSTGRES_USER: turtle-run-app-db
+      POSTGRES_PASSWORD: turtle-run-app-db
     volumes:
-      - /Users/kihoyoung/docker-volumes/gamedb:/var/lib/postgresql/data
+      - /Users/kihoyoung/docker-volumes/turtle-run-app-db:/var/lib/postgresql/data
     ports:
       - 5432:5432
 
   # Spring Boot 서비스 설정
   app:
-    container_name: game-server
-    image: game-server:v1.0
+    container_name: turtle-run-app-be
+    image: turtle-run-app-be:v1.0
     build:
       context: .
       dockerfile: Dockerfile
@@ -26,8 +26,8 @@ services:
       - db
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/game
-      SPRING_DATASOURCE_USERNAME: game
-      SPRING_DATASOURCE_PASSWORD: game
+      SPRING_DATASOURCE_USERNAME: turtle-run-app-db
+      SPRING_DATASOURCE_PASSWORD: turtle-run-app-db
 
 volumes:
   db_data:
