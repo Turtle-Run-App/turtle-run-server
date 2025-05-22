@@ -1,4 +1,4 @@
-package com.watchGame.hoho00;
+package com.turtleRun.be;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

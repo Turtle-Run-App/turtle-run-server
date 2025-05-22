@@ -1,4 +1,4 @@
-package com.watchGame.hoho00.config;
+package com.turtleRun.be.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

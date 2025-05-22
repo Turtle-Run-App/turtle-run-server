@@ -1,4 +1,4 @@
-package com.watchGame.hoho00;
+package com.turtleRun.be;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

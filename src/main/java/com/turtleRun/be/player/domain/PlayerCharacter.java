@@ -1,7 +1,6 @@
-package com.watchGame.hoho00.player.domain;
+package com.turtleRun.be.player.domain;
 
 
-import com.watchGame.hoho00.player.domain.Player;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

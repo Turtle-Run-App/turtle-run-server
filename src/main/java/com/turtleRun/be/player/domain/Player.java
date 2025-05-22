@@ -1,4 +1,4 @@
-package com.watchGame.hoho00.player.domain;
+package com.turtleRun.be.player.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
