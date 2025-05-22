@@ -26,8 +26,8 @@ services:
       - db
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/turtle-run-app-db
-      SPRING_DATASOURCE_USERNAME: turtle-run-app-db
-      SPRING_DATASOURCE_PASSWORD: turtle-run-app-db
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       TZ: Asia/Seoul
 
 volumes:
