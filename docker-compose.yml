@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - /Users/kihoyoung/docker-volumes/turtle-run-app-db:/var/lib/postgresql/data
+      - ${DOCKER_VOLUME_ROOT}docker-volumes/turtle-run-app-db:/var/lib/postgresql/data
     ports:
       - 5432:5432
 
