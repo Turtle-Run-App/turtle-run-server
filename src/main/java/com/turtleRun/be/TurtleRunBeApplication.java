@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
-public class GameServerApplication {
+public class TurtleRunBeApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GameServerApplication.class, args);
+		SpringApplication.run(TurtleRunBeApplication.class, args);
 	}
 
 }
