@@ -5,9 +5,9 @@ services:
     container_name: turtle-run-app-db
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: turtle-run-app-db
-      POSTGRES_USER: turtle-run-app-db
-      POSTGRES_PASSWORD: turtle-run-app-db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - /Users/kihoyoung/docker-volumes/turtle-run-app-db:/var/lib/postgresql/data
     ports:
