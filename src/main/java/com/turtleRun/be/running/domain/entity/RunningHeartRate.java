@@ -1,19 +1,18 @@
-package com.turtleRun.be.running.domain;
+package com.turtleRun.be.running.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "running_route_points")
+@Table(name = "running_heart_rates")
 @Getter
 @Setter
 @NoArgsConstructor
-public class RunningRoutePoint {
+public class RunningHeartRate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,14 +21,8 @@ public class RunningRoutePoint {
     @JoinColumn(name = "session_id")
     private RunningSession session;
 
-    private BigDecimal latitude;
-    private BigDecimal longitude;
-    private BigDecimal altitude;
+    private Integer heartRate;
     private LocalDateTime timestamp;
-    private BigDecimal speed;
-    private BigDecimal verticalAccuracy;
-    private BigDecimal horizontalAccuracy;
-    private BigDecimal course;
     private LocalDateTime createdAt;
 
     @PrePersist

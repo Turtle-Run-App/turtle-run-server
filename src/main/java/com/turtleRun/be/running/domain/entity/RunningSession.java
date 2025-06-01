@@ -1,4 +1,4 @@
-package com.turtleRun.be.running.domain;
+package com.turtleRun.be.running.domain.entity;
 
 import com.turtleRun.be.player.domain.Player;
 import jakarta.persistence.*;
