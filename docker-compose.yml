@@ -1,3 +1,38 @@
+#version: '3'
+#services:
+#  # PostgreSQL 서비스 설정
+#  db:
+#    container_name: turtle-run-app-db
+#    image: postgres:17-alpine
+#    environment:
+#      POSTGRES_DB: ${POSTGRES_DB}
+#      POSTGRES_USER: ${POSTGRES_USER}
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#    volumes:
+#      - ${DOCKER_VOLUME_ROOT}docker-volumes/turtle-run-app-db:/var/lib/postgresql/data
+#    ports:
+#      - 5432:5432
+#
+#  # Spring Boot 서비스 설정
+#  app:
+#    container_name: turtle-run-app-be
+#    image: turtle-run-app-be:v1.0
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      - db
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/turtle-run-app-db
+#      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+#      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+#      TZ: Asia/Seoul
+#
+#volumes:
+#  db_data:
+
 version: '3'
 services:
   # PostgreSQL 서비스 설정
@@ -9,9 +44,16 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ${DOCKER_VOLUME_ROOT}docker-volumes/turtle-run-app-db:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - "5432:5432"
+    networks:
+      - turtle-run-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Spring Boot 서비스 설정
   app:
@@ -23,12 +65,19 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/turtle-run-app-db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       TZ: Asia/Seoul
+    networks:
+      - turtle-run-network
+
+networks:
+  turtle-run-network:
+    driver: bridge
 
 volumes:
   db_data:
