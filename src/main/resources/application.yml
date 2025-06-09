@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/game
-    username: game
-    password: game
+    url: jdbc:postgresql://localhost:5432/turtle-run-app-db
+    username: turtle-run-app-db
+    password: turtle-run-app-db
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
