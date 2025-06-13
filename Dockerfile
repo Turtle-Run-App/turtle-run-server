@@ -6,7 +6,7 @@ FROM openjdk:23-jdk
 
 # 워크디렉토리 설정
 WORKDIR /app
-#CMD ["./gradlew", "clean", "build"]
+CMD ["./gradlew", "clean", "build"]
 
 
 # 애플리케이션 패키지 복사
