@@ -1,0 +1,15 @@
+FROM postgres:17-alpine
+
+# 필요한 경우 추가 설정이나 초기화 스크립트를 여기에 추가할 수 있습니다
+# COPY ./init.sql /docker-entrypoint-initdb.d/
+
+# 환경 변수 설정
+ENV POSTGRES_DB=${POSTGRES_DB}
+ENV POSTGRES_USER=${POSTGRES_USER}
+ENV POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
+# 포트 노출
+EXPOSE 5432
+
+# 볼륨 설정
+VOLUME ["/var/lib/postgresql/data"] 
