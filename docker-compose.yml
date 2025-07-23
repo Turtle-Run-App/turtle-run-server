@@ -38,7 +38,9 @@ services:
   # PostgreSQL 서비스 설정
   db:
     container_name: turtle-run-app-db
-    image: postgres:17-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile-DB
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -58,7 +60,10 @@ services:
   # Spring Boot 서비스 설정
   app:
     container_name: turtle-run-app-be
+<<<<<<< HEAD
     image: turtle-run-app-be:latest
+=======
+>>>>>>> dev
     build:
       context: .
       dockerfile: Dockerfile
