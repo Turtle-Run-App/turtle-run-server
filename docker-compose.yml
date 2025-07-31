@@ -1,37 +1,4 @@
-#version: '3'
-#services:
-#  # PostgreSQL 서비스 설정
-#  db:
-#    container_name: turtle-run-app-db
-#    image: postgres:17-alpine
-#    environment:
-#      POSTGRES_DB: ${POSTGRES_DB}
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#    volumes:
-#      - ${DOCKER_VOLUME_ROOT}docker-volumes/turtle-run-app-db:/var/lib/postgresql/data
-#    ports:
-#      - 5432:5432
-#
-#  # Spring Boot 서비스 설정
-#  app:
-#    container_name: turtle-run-app-be
-#    image: turtle-run-app-be:v1.0
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8081:8081"
-#    depends_on:
-#      - db
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/turtle-run-app-db
-#      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-#      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-#      TZ: Asia/Seoul
-#
-#volumes:
-#  db_data:
+
 
 version: '3'
 services:
@@ -60,10 +27,8 @@ services:
   # Spring Boot 서비스 설정
   app:
     container_name: turtle-run-app-be
-<<<<<<< HEAD
     image: turtle-run-app-be:latest
-=======
->>>>>>> dev
+
     build:
       context: .
       dockerfile: Dockerfile
