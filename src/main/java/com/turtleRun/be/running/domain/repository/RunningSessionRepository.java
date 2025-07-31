@@ -15,7 +15,6 @@ import java.util.Optional;
 
 @Repository
 public interface RunningSessionRepository extends JpaRepository<RunningSession, Long> {
-    
     /**
      * 플레이어의 모든 러닝 세션 조회
      */
