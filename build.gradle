@@ -29,6 +29,7 @@ dependencies {
 	//runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.mockito:mockito-inline:5.2.0'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	compileOnly 'org.projectlombok:lombok'
@@ -42,6 +43,14 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	
+	// Mockito agent 설정 추가
+	doFirst {
+		def mockitoCore = configurations.testRuntimeClasspath.find { it.name.contains('mockito-core') }
+		if (mockitoCore) {
+			jvmArgs += "-javaagent:${mockitoCore.absolutePath}"
+		}
+	}
 }
 
 
