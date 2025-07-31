@@ -13,6 +13,6 @@ public class RunningSessionController {
     private RunningApplicationService runningApplicationService;
     @GetMapping("healthCheck")
     public String runningSessionHealthCheck(String testFlag) {
-        return "runningSession is ok with : " + testFlag;
+        return "runningSession is ok with : " + testFlag + "!!";
     }
 }
