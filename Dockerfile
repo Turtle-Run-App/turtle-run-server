@@ -8,10 +8,6 @@ RUN apt-get update && apt-get install -y \
 
 # 워크디렉토리 설정
 WORKDIR /app
-<<<<<<< HEAD
-CMD ["./gradlew", "clean", "build"]
-=======
->>>>>>> dev
 
 # Gradle 래퍼와 빌드 설정 파일들을 먼저 복사
 COPY gradlew .
