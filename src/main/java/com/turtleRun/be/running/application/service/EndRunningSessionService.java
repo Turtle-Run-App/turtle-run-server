@@ -48,56 +48,60 @@ public class EndRunningSessionService {
      * @return 완료된 러닝 세션
      */
     public RunningSession endRunningSession(EndRunningSessionRequest request) {
-        log.info("러닝 세션 완료 요청: sessionId={}, playerId={}", request.getSessionId(), request.getPlayerId());
+        log.info("러닝 세션 완료 요청: playerId={}", request.getPlayerId());
 
-        // 1. 기존 세션 조회 및 검증
-        RunningSession session = runningSessionRepository.findById(request.getSessionId())
-                .orElseThrow(() -> new IllegalArgumentException("Running session not found: " + request.getSessionId()));
+        // 1. 새로운 러닝 세션 생성
+        RunningSession session = new RunningSession();
+        
+        // Player 객체 생성 및 설정
+        Player player = new Player();
+        player.setPlayerId(request.getPlayerId());
+        session.setPlayer(player);
+        
+        session.setStartTime(request.getEndTime().minusSeconds(request.getDuration()));
+        session.setEndTime(request.getEndTime());
+        session.setDuration(request.getDuration());
+        session.setActiveDuration(request.getActiveDuration());
+        session.setDistance(request.getDistance());
+        session.setTotalCalories(request.getTotalCalories());
+        session.setAveragePace(request.getAveragePace());
+        session.setBestPace(request.getBestPace());
+        session.setAverageSpeed(request.getAverageSpeed());
+        session.setMaxSpeed(request.getMaxSpeed());
+        session.setTotalAscent(request.getTotalAscent());
+        session.setTotalDescent(request.getTotalDescent());
+        session.setWeatherTemperature(request.getWeatherTemperature());
+        session.setWeatherHumidity(request.getWeatherHumidity());
+        session.setSourceDevice(request.getSourceDevice());
+        session.setSourceApp(request.getSourceApp());
 
-        // 2. 세션 완료 처리
-        RunningSession completedSession = runningSessionDomainService.completeRunningSession(
-                session.getId(),
-                request.getEndTime(),
-                request.getDuration(),
-                request.getActiveDuration(),
-                request.getDistance(),
-                request.getTotalCalories(),
-                request.getAveragePace(),
-                request.getBestPace(),
-                request.getAverageSpeed(),
-                request.getMaxSpeed(),
-                request.getTotalAscent(),
-                request.getTotalDescent(),
-                request.getWeatherTemperature(),
-                request.getWeatherHumidity(),
-                request.getSourceDevice(),
-                request.getSourceApp()
-        );
+        // 2. 세션 저장
+        RunningSession savedSession = runningSessionRepository.save(session);
 
         // 3. 심박수 데이터 저장
         if (request.getHeartRateData() != null && !request.getHeartRateData().isEmpty()) {
-            saveHeartRateData(completedSession, request.getHeartRateData());
+            saveHeartRateData(savedSession, request.getHeartRateData());
         }
 
         // 4. 경로 포인트 데이터 저장
         if (request.getRoutePoints() != null && !request.getRoutePoints().isEmpty()) {
-            saveRoutePointData(completedSession, request.getRoutePoints());
+            saveRoutePointData(savedSession, request.getRoutePoints());
         }
 
         // 5. 스플릿 데이터 저장
         if (request.getSplits() != null && !request.getSplits().isEmpty()) {
-            saveSplitData(completedSession, request.getSplits());
+            saveSplitData(savedSession, request.getSplits());
         }
 
         // 6. 세션 통계 생성 및 저장
         if (request.getStatistics() != null) {
-            saveSessionStatistics(completedSession, request.getStatistics());
+            saveSessionStatistics(savedSession, request.getStatistics());
         }
 
         log.info("러닝 세션 완료 완료: sessionId={}, distance={}m, duration={}s", 
-                completedSession.getId(), completedSession.getDistance(), completedSession.getDuration());
+                savedSession.getId(), savedSession.getDistance(), savedSession.getDuration());
 
-        return completedSession;
+        return savedSession;
     }
 
     /**
@@ -170,102 +174,5 @@ public class EndRunningSessionService {
         );
         log.debug("세션 통계 저장 완료");
     }
-
-    /**
-     * 러닝 세션 완료 요청 데이터
-     */
-    public static class EndRunningSessionRequest {
-        private Long sessionId;
-        private Long playerId;
-        private LocalDateTime endTime;
-        private Integer duration;
-        private Integer activeDuration;
-        private BigDecimal distance;
-        private BigDecimal totalCalories;
-        private BigDecimal averagePace;
-        private BigDecimal bestPace;
-        private BigDecimal averageSpeed;
-        private BigDecimal maxSpeed;
-        private BigDecimal totalAscent;
-        private BigDecimal totalDescent;
-        private BigDecimal weatherTemperature;
-        private Integer weatherHumidity;
-        private String sourceDevice;
-        private String sourceApp;
-        private List<HeartRateData> heartRateData;
-        private List<RoutePointData> routePoints;
-        private List<SplitData> splits;
-        private StatisticsData statistics;
-
-        // Getters and Setters
-        public Long getSessionId() { return sessionId; }
-        public void setSessionId(Long sessionId) { this.sessionId = sessionId; }
-
-        public Long getPlayerId() { return playerId; }
-        public void setPlayerId(Long playerId) { this.playerId = playerId; }
-
-        public LocalDateTime getEndTime() { return endTime; }
-        public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
-
-        public Integer getDuration() { return duration; }
-        public void setDuration(Integer duration) { this.duration = duration; }
-
-        public Integer getActiveDuration() { return activeDuration; }
-        public void setActiveDuration(Integer activeDuration) { this.activeDuration = activeDuration; }
-
-        public BigDecimal getDistance() { return distance; }
-        public void setDistance(BigDecimal distance) { this.distance = distance; }
-
-        public BigDecimal getTotalCalories() { return totalCalories; }
-        public void setTotalCalories(BigDecimal totalCalories) { this.totalCalories = totalCalories; }
-
-        public BigDecimal getAveragePace() { return averagePace; }
-        public void setAveragePace(BigDecimal averagePace) { this.averagePace = averagePace; }
-
-        public BigDecimal getBestPace() { return bestPace; }
-        public void setBestPace(BigDecimal bestPace) { this.bestPace = bestPace; }
-
-        public BigDecimal getAverageSpeed() { return averageSpeed; }
-        public void setAverageSpeed(BigDecimal averageSpeed) { this.averageSpeed = averageSpeed; }
-
-        public BigDecimal getMaxSpeed() { return maxSpeed; }
-        public void setMaxSpeed(BigDecimal maxSpeed) { this.maxSpeed = maxSpeed; }
-
-        public BigDecimal getTotalAscent() { return totalAscent; }
-        public void setTotalAscent(BigDecimal totalAscent) { this.totalAscent = totalAscent; }
-
-        public BigDecimal getTotalDescent() { return totalDescent; }
-        public void setTotalDescent(BigDecimal totalDescent) { this.totalDescent = totalDescent; }
-
-        public BigDecimal getWeatherTemperature() { return weatherTemperature; }
-        public void setWeatherTemperature(BigDecimal weatherTemperature) { this.weatherTemperature = weatherTemperature; }
-
-        public Integer getWeatherHumidity() { return weatherHumidity; }
-        public void setWeatherHumidity(Integer weatherHumidity) { this.weatherHumidity = weatherHumidity; }
-
-        public String getSourceDevice() { return sourceDevice; }
-        public void setSourceDevice(String sourceDevice) { this.sourceDevice = sourceDevice; }
-
-        public String getSourceApp() { return sourceApp; }
-        public void setSourceApp(String sourceApp) { this.sourceApp = sourceApp; }
-
-        public List<HeartRateData> getHeartRateData() { return heartRateData; }
-        public void setHeartRateData(List<HeartRateData> heartRateData) { this.heartRateData = heartRateData; }
-
-        public List<RoutePointData> getRoutePoints() { return routePoints; }
-        public void setRoutePoints(List<RoutePointData> routePoints) { this.routePoints = routePoints; }
-
-        public List<SplitData> getSplits() { return splits; }
-        public void setSplits(List<SplitData> splits) { this.splits = splits; }
-
-        public StatisticsData getStatistics() { return statistics; }
-        public void setStatistics(StatisticsData statistics) { this.statistics = statistics; }
-    }
-
-
-
-
-
-
 
 } 

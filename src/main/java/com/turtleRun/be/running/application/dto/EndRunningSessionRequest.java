@@ -18,7 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EndRunningSessionRequest {
-    private Long sessionId;
     private Long playerId;
     private LocalDateTime endTime;
     private Integer duration;
