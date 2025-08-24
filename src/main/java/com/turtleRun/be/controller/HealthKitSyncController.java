@@ -1,5 +1,6 @@
 package com.turtleRun.be.controller;
 
+import com.turtleRun.be.healthkit.exception.HealthKitException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -91,35 +92,27 @@ public class HealthKitSyncController {
             )
             @RequestBody HealthKitSyncRequestDto healthKitData) {
         
-        try {
-            // TODO: HealthKit 데이터 동기화 로직 구현
-            // HealthKitSyncResponse response = healthKitSyncService.syncHealthKitData(healthKitData);
-            
-            HealthKitSyncResponseDto response = HealthKitSyncResponseDto.builder()
-                    .success(true)
-                    .message("HealthKit 데이터 동기화가 완료되었습니다.")
-                    .timestamp(java.time.LocalDateTime.now())
-                    .data(HealthKitSyncResponseDto.SyncStatusData.builder()
-                            .userId(Long.valueOf(healthKitData.getUserId().replace("user", "")))
-                            .syncStatus("COMPLETED")
-                            .lastSyncTime(java.time.LocalDateTime.now())
-                            .progressPercentage(100)
-                            .syncedDataCount(healthKitData.getHealthKitDataList() != null ? healthKitData.getHealthKitDataList().size() : 0)
-                            .totalDataCount(healthKitData.getHealthKitDataList() != null ? healthKitData.getHealthKitDataList().size() : 0)
-                            .build())
-                    .build();
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            HealthKitSyncResponseDto errorResponse = HealthKitSyncResponseDto.builder()
-                    .success(false)
-                    .message("HealthKit 데이터 동기화 중 오류가 발생했습니다: " + e.getMessage())
-                    .timestamp(java.time.LocalDateTime.now())
-                    .build();
-            
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+        // 입력 데이터 검증
+        validateHealthKitSyncRequest(healthKitData);
+        
+        // TODO: HealthKit 데이터 동기화 로직 구현
+        // HealthKitSyncResponse response = healthKitSyncService.syncHealthKitData(healthKitData);
+        
+        HealthKitSyncResponseDto response = HealthKitSyncResponseDto.builder()
+                .success(true)
+                .message("HealthKit 데이터 동기화가 완료되었습니다.")
+                .timestamp(java.time.LocalDateTime.now())
+                .data(HealthKitSyncResponseDto.SyncStatusData.builder()
+                        .userId(Long.valueOf(healthKitData.getUserId().replace("user", "")))
+                        .syncStatus("COMPLETED")
+                        .lastSyncTime(java.time.LocalDateTime.now())
+                        .progressPercentage(100)
+                        .syncedDataCount(healthKitData.getHealthKitDataList() != null ? healthKitData.getHealthKitDataList().size() : 0)
+                        .totalDataCount(healthKitData.getHealthKitDataList() != null ? healthKitData.getHealthKitDataList().size() : 0)
+                        .build())
+                .build();
+        
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -149,35 +142,27 @@ public class HealthKitSyncController {
             @Parameter(description = "사용자 ID", example = "user123")
             @PathVariable String userId) {
         
-        try {
-            // TODO: 동기화 상태 조회 로직 구현
-            // HealthKitSyncResponseDto syncStatus = healthKitSyncService.getSyncStatus(userId);
-            
-            HealthKitSyncResponseDto response = HealthKitSyncResponseDto.builder()
-                    .success(true)
-                    .message("동기화 상태를 성공적으로 조회했습니다.")
-                    .timestamp(java.time.LocalDateTime.now())
-                    .data(HealthKitSyncResponseDto.SyncStatusData.builder()
-                            .userId(Long.valueOf(userId.replace("user", "")))
-                            .syncStatus("UNKNOWN")
-                            .lastSyncTime(null)
-                            .progressPercentage(0)
-                            .syncedDataCount(0)
-                            .totalDataCount(0)
-                            .build())
-                    .build();
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            HealthKitSyncResponseDto errorResponse = HealthKitSyncResponseDto.builder()
-                    .success(false)
-                    .message("동기화 상태 조회 중 오류가 발생했습니다: " + e.getMessage())
-                    .timestamp(java.time.LocalDateTime.now())
-                    .build();
-            
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+        // 사용자 ID 검증
+        validateUserId(userId);
+        
+        // TODO: 동기화 상태 조회 로직 구현
+        // HealthKitSyncResponseDto syncStatus = healthKitSyncService.getSyncStatus(userId);
+        
+        HealthKitSyncResponseDto response = HealthKitSyncResponseDto.builder()
+                .success(true)
+                .message("동기화 상태를 성공적으로 조회했습니다.")
+                .timestamp(java.time.LocalDateTime.now())
+                .data(HealthKitSyncResponseDto.SyncStatusData.builder()
+                        .userId(Long.valueOf(userId.replace("user", "")))
+                        .syncStatus("UNKNOWN")
+                        .lastSyncTime(null)
+                        .progressPercentage(0)
+                        .syncedDataCount(0)
+                        .totalDataCount(0)
+                        .build())
+                .build();
+        
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -209,31 +194,70 @@ public class HealthKitSyncController {
             @Parameter(description = "조회할 히스토리 개수", example = "10")
             @RequestParam(defaultValue = "10") int limit) {
         
-        try {
-            // TODO: 동기화 히스토리 조회 로직 구현
-            // HealthKitSyncResponseDto history = healthKitSyncService.getSyncHistory(userId, limit);
-            
-            HealthKitSyncResponseDto response = HealthKitSyncResponseDto.builder()
-                    .success(true)
-                    .message("동기화 히스토리를 성공적으로 조회했습니다.")
-                    .timestamp(java.time.LocalDateTime.now())
-                    .data(HealthKitSyncResponseDto.SyncHistoryData.builder()
-                            .userId(Long.valueOf(userId.replace("user", "")))
-                            .history(new java.util.ArrayList<>())
-                            .totalCount(0)
-                            .build())
-                    .build();
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            HealthKitSyncResponseDto errorResponse = HealthKitSyncResponseDto.builder()
-                    .success(false)
-                    .message("동기화 히스토리 조회 중 오류가 발생했습니다: " + e.getMessage())
-                    .timestamp(java.time.LocalDateTime.now())
-                    .build();
-            
-            return ResponseEntity.badRequest().body(errorResponse);
+        // 사용자 ID 검증
+        validateUserId(userId);
+        
+        // limit 검증
+        if (limit <= 0 || limit > 100) {
+            throw new HealthKitException.InvalidData("limit은 1~100 범위여야 합니다", "limit", String.valueOf(limit));
+        }
+        
+        // TODO: 동기화 히스토리 조회 로직 구현
+        // HealthKitSyncResponseDto history = healthKitSyncService.getSyncHistory(userId, limit);
+        
+        HealthKitSyncResponseDto response = HealthKitSyncResponseDto.builder()
+                .success(true)
+                .message("동기화 히스토리를 성공적으로 조회했습니다.")
+                .timestamp(java.time.LocalDateTime.now())
+                .data(HealthKitSyncResponseDto.SyncHistoryData.builder()
+                        .userId(Long.valueOf(userId.replace("user", "")))
+                        .history(new java.util.ArrayList<>())
+                        .totalCount(0)
+                        .build())
+                .build();
+        
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * HealthKit 동기화 요청 데이터 검증
+     */
+    private void validateHealthKitSyncRequest(HealthKitSyncRequestDto healthKitData) {
+        if (healthKitData == null) {
+            throw new HealthKitException.InvalidData("HealthKit 데이터가 null입니다");
+        }
+
+        if (healthKitData.getUserId() == null || healthKitData.getUserId().trim().isEmpty()) {
+            throw new HealthKitException.InvalidData("userId는 필수입니다");
+        }
+
+        if (healthKitData.getSyncStartTime() == null) {
+            throw new HealthKitException.InvalidData("syncStartTime은 필수입니다");
+        }
+
+        if (healthKitData.getSyncEndTime() == null) {
+            throw new HealthKitException.InvalidData("syncEndTime은 필수입니다");
+        }
+
+        if (healthKitData.getSyncStartTime().isAfter(healthKitData.getSyncEndTime())) {
+            throw new HealthKitException.InvalidData("syncStartTime은 syncEndTime보다 이전이어야 합니다");
+        }
+
+        if (healthKitData.getHealthKitDataList() == null || healthKitData.getHealthKitDataList().isEmpty()) {
+            throw new HealthKitException.InvalidData("healthKitDataList는 비어있을 수 없습니다");
+        }
+    }
+
+    /**
+     * 사용자 ID 검증
+     */
+    private void validateUserId(String userId) {
+        if (userId == null || userId.trim().isEmpty()) {
+            throw new HealthKitException.InvalidData("사용자 ID는 필수입니다");
+        }
+
+        if (!userId.startsWith("user")) {
+            throw new HealthKitException.InvalidData("사용자 ID 형식이 올바르지 않습니다", "userId", userId);
         }
     }
 } 

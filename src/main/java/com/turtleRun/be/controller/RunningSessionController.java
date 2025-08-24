@@ -3,6 +3,7 @@ package com.turtleRun.be.controller;
 import com.turtleRun.be.common.model.SaveRunningSessionRequestDto;
 import com.turtleRun.be.common.model.SaveRunningSessionResponseDto;
 import com.turtleRun.be.running.application.service.RunningApplicationService;
+import com.turtleRun.be.running.exception.RunningException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -98,45 +99,78 @@ public class RunningSessionController {
             )
             @RequestBody SaveRunningSessionRequestDto request) {
 
-        try {
-            // TODO: RunningApplicationService를 통해 실제 저장 로직 구현
-            // RunningSession savedSession = runningApplicationService.saveRunningSession(request);
+        // 입력 데이터 검증
+        validateRunningSessionRequest(request);
 
-            // 임시 응답 데이터 생성
-            SaveRunningSessionResponseDto response = SaveRunningSessionResponseDto.builder()
-                    .success(true)
-                    .message("러닝 세션이 성공적으로 저장되었습니다.")
-                    .timestamp(LocalDateTime.now())
-                    .data(SaveRunningSessionResponseDto.RunningSessionData.builder()
-                            .sessionId(123L) // 임시 ID
-                            .workoutId(request.getWorkoutId())
-                            .startTime(request.getStartTime())
-                            .endTime(request.getEndTime())
-                            .workoutType(request.getWorkoutType())
-                            .duration(request.getDuration())
-                            .distance(request.getDistance())
-                            .calories(request.getCalories())
-                            .avgHeartRate(request.getAvgHeartRate())
-                            .createdAt(LocalDateTime.now())
-                            .dataSummary(SaveRunningSessionResponseDto.DataSummary.builder()
-                                    .routePointCount(request.getRoute() != null ? request.getRoute().size() : 0)
-                                    .totalDistance(request.getDistance() != null ? request.getDistance() : BigDecimal.ZERO)
-                                    .totalDuration(request.getDuration() != null ? request.getDuration() : 0)
-                                    .totalCalories(request.getCalories() != null ? request.getCalories() : 0)
-                                    .build())
-                            .build())
-                    .build();
+        // TODO: RunningApplicationService를 통해 실제 저장 로직 구현
+        // RunningSession savedSession = runningApplicationService.saveRunningSession(request);
 
-            return ResponseEntity.ok(response);
+        // 임시 응답 데이터 생성
+        SaveRunningSessionResponseDto response = SaveRunningSessionResponseDto.builder()
+                .success(true)
+                .message("러닝 세션이 성공적으로 저장되었습니다.")
+                .timestamp(LocalDateTime.now())
+                .data(SaveRunningSessionResponseDto.RunningSessionData.builder()
+                        .sessionId(123L) // 임시 ID
+                        .workoutId(request.getWorkoutId())
+                        .startTime(request.getStartTime())
+                        .endTime(request.getEndTime())
+                        .workoutType(request.getWorkoutType())
+                        .duration(request.getDuration())
+                        .distance(request.getDistance())
+                        .calories(request.getCalories())
+                        .avgHeartRate(request.getAvgHeartRate())
+                        .createdAt(LocalDateTime.now())
+                        .dataSummary(SaveRunningSessionResponseDto.DataSummary.builder()
+                                .routePointCount(request.getRoute() != null ? request.getRoute().size() : 0)
+                                .totalDistance(request.getDistance() != null ? request.getDistance() : BigDecimal.ZERO)
+                                .totalDuration(request.getDuration() != null ? request.getDuration() : 0)
+                                .totalCalories(request.getCalories() != null ? request.getCalories() : 0)
+                                .build())
+                        .build())
+                .build();
 
-        } catch (Exception e) {
-            SaveRunningSessionResponseDto errorResponse = SaveRunningSessionResponseDto.builder()
-                    .success(false)
-                    .message("러닝 세션 저장 중 오류가 발생했습니다: " + e.getMessage())
-                    .timestamp(LocalDateTime.now())
-                    .build();
+        return ResponseEntity.ok(response);
+    }
 
-            return ResponseEntity.badRequest().body(errorResponse);
+    /**
+     * 러닝 세션 요청 데이터 검증
+     */
+    private void validateRunningSessionRequest(SaveRunningSessionRequestDto request) {
+        if (request == null) {
+            throw new RunningException.SessionInvalidData("요청 데이터가 null입니다");
+        }
+
+        if (request.getWorkoutId() == null || request.getWorkoutId().trim().isEmpty()) {
+            throw new RunningException.SessionInvalidData("workoutId는 필수입니다");
+        }
+
+        if (request.getStartTime() == null) {
+            throw new RunningException.SessionInvalidData("startTime은 필수입니다");
+        }
+
+        if (request.getEndTime() == null) {
+            throw new RunningException.SessionInvalidData("endTime은 필수입니다");
+        }
+
+        if (request.getStartTime().isAfter(request.getEndTime())) {
+            throw new RunningException.SessionInvalidData("startTime은 endTime보다 이전이어야 합니다");
+        }
+
+        if (request.getDuration() != null && request.getDuration() <= 0) {
+            throw new RunningException.DurationInvalid(request.getDuration(), "duration은 0보다 커야 합니다");
+        }
+
+        if (request.getDistance() != null && request.getDistance().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RunningException.DistanceInvalid(request.getDistance(), "distance는 0보다 커야 합니다");
+        }
+
+        if (request.getCalories() != null && request.getCalories() < 0) {
+            throw new RunningException.CaloriesInvalid(request.getCalories(), "calories는 0 이상이어야 합니다");
+        }
+
+        if (request.getAvgHeartRate() != null && (request.getAvgHeartRate() < 0 || request.getAvgHeartRate() > 300)) {
+            throw new RunningException.HeartRateInvalid(request.getAvgHeartRate(), "avgHeartRate는 0~300 범위여야 합니다");
         }
     }
 }

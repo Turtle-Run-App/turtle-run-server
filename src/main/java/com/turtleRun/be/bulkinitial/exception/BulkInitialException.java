@@ -114,6 +114,32 @@ public class BulkInitialException extends TurtleRunException {
         }
     }
     
+    // ===== 데이터 검증 관련 예외 =====
+    
+    /**
+     * 잘못된 데이터로 인한 예외
+     */
+    public static class InvalidData extends BulkInitialException {
+        public InvalidData(String message) {
+            super(ErrorCode.BULK_INITIAL_INVALID_SYNC_PERIOD, message);
+        }
+        
+        public InvalidData(String field, Object value) {
+            super(ErrorCode.BULK_INITIAL_INVALID_SYNC_PERIOD, 
+                  String.format("잘못된 데이터 - %s: %s", field, value));
+            addParameter("field", field)
+                .addParameter("value", value);
+        }
+        
+        public InvalidData(String field, Object value, String reason) {
+            super(ErrorCode.BULK_INITIAL_INVALID_SYNC_PERIOD, 
+                  String.format("잘못된 데이터 - %s: %s, 이유: %s", field, value, reason));
+            addParameter("field", field)
+                .addParameter("value", value)
+                .addParameter("reason", reason);
+        }
+    }
+    
     // ===== 동기화 실패 관련 예외 =====
     
     /**

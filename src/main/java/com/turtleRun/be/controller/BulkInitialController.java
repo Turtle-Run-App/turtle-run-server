@@ -1,5 +1,6 @@
 package com.turtleRun.be.controller;
 
+import com.turtleRun.be.bulkinitial.exception.BulkInitialException;
 import com.turtleRun.be.common.model.SaveBulkInitialRequestDto;
 import com.turtleRun.be.common.model.SaveBulkInitialResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -85,43 +86,72 @@ public class BulkInitialController {
             )
             @RequestBody SaveBulkInitialRequestDto request) {
 
-        try {
-            // TODO: BulkInitial 서비스를 통해 실제 동기화 로직 구현
-            // SaveBulkInitialResponseDto response = bulkInitialService.syncBulkInitial(request);
+        // 입력 데이터 검증
+        validateBulkInitialRequest(request);
 
-            // 임시 응답 데이터 생성
-            LocalDateTime now = LocalDateTime.now();
-            long syncTimeMs = 2500L; // 임시 동기화 시간
-            
-            SaveBulkInitialResponseDto response = SaveBulkInitialResponseDto.builder()
-                    .success(true)
-                    .message("러닝 데이터 초기 동기화가 완료되었습니다.")
-                    .timestamp(now)
-                    .data(SaveBulkInitialResponseDto.SyncResultData.builder()
-                            .userId(request.getUserId())
-                            .syncStartTime(request.getSyncStartTime())
-                            .syncEndTime(now)
-                            .totalSyncTimeMs(syncTimeMs)
-                            .totalSessionsProcessed(request.getRunningSessions() != null ? request.getRunningSessions().size() : 0)
-                            .successfulSessionsCount(request.getRunningSessions() != null ? request.getRunningSessions().size() : 0)
-                            .failedSessionsCount(0)
-                            .successRate(100.0)
-                            .dataSummary(createDataSummary(request))
-                            .successfulSessions(createSuccessfulSessionsList(request))
-                            .failedSessions(new ArrayList<>())
-                            .build())
-                    .build();
+        // TODO: BulkInitial 서비스를 통해 실제 동기화 로직 구현
+        // SaveBulkInitialResponseDto response = bulkInitialService.syncBulkInitial(request);
 
-            return ResponseEntity.ok(response);
+        // 임시 응답 데이터 생성
+        LocalDateTime now = LocalDateTime.now();
+        long syncTimeMs = 2500L; // 임시 동기화 시간
+        
+        SaveBulkInitialResponseDto response = SaveBulkInitialResponseDto.builder()
+                .success(true)
+                .message("러닝 데이터 초기 동기화가 완료되었습니다.")
+                .timestamp(now)
+                .data(SaveBulkInitialResponseDto.SyncResultData.builder()
+                        .userId(request.getUserId())
+                        .syncStartTime(request.getSyncStartTime())
+                        .syncEndTime(now)
+                        .totalSyncTimeMs(syncTimeMs)
+                        .totalSessionsProcessed(request.getRunningSessions() != null ? request.getRunningSessions().size() : 0)
+                        .successfulSessionsCount(request.getRunningSessions() != null ? request.getRunningSessions().size() : 0)
+                        .failedSessionsCount(0)
+                        .successRate(100.0)
+                        .dataSummary(createDataSummary(request))
+                        .successfulSessions(createSuccessfulSessionsList(request))
+                        .failedSessions(new ArrayList<>())
+                        .build())
+                .build();
 
-        } catch (Exception e) {
-            SaveBulkInitialResponseDto errorResponse = SaveBulkInitialResponseDto.builder()
-                    .success(false)
-                    .message("러닝 데이터 초기 동기화 중 오류가 발생했습니다: " + e.getMessage())
-                    .timestamp(LocalDateTime.now())
-                    .build();
+        return ResponseEntity.ok(response);
+    }
 
-            return ResponseEntity.badRequest().body(errorResponse);
+    /**
+     * 러닝 데이터 초기 동기화 요청 데이터 검증
+     */
+    private void validateBulkInitialRequest(SaveBulkInitialRequestDto request) {
+        if (request == null) {
+            throw new BulkInitialException.InvalidData("요청 데이터가 null입니다");
+        }
+
+        if (request.getUserId() == null) {
+            throw new BulkInitialException.InvalidData("userId는 필수입니다");
+        }
+
+        if (request.getSyncStartTime() == null) {
+            throw new BulkInitialException.InvalidData("syncStartTime은 필수입니다");
+        }
+
+        if (request.getRunningSessions() == null || request.getRunningSessions().isEmpty()) {
+            throw new BulkInitialException.InvalidData("runningSessions는 비어있을 수 없습니다");
+        }
+
+        // 동기화 기간 검증 (30일 이내)
+        LocalDateTime now = LocalDateTime.now();
+        if (request.getSyncStartTime().isBefore(now.minusDays(30))) {
+            throw new BulkInitialException.InvalidSyncPeriod(
+                request.getSyncStartTime(), 
+                now, 
+                "동기화 시작 시간은 현재 시점으로부터 30일 이내여야 합니다"
+            );
+        }
+
+        // 데이터 크기 검증
+        int totalSessions = request.getRunningSessions().size();
+        if (totalSessions > 100) {
+            throw new BulkInitialException.DataTooLarge((long) totalSessions, 100L, "개");
         }
     }
 

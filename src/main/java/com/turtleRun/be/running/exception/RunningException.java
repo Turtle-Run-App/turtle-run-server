@@ -70,16 +70,15 @@ public class RunningException extends TurtleRunException {
      * 잘못된 러닝 세션 데이터로 인한 예외
      */
     public static class SessionInvalidData extends RunningException {
-        public SessionInvalidData(String field, Object value, String reason) {
-            super(ErrorCode.RUNNING_SESSION_INVALID_DATA, 
-                  String.format("잘못된 러닝 세션 데이터 - %s: %s, 이유: %s", field, value, reason));
-            addParameter("field", field)
-                .addParameter("value", value)
-                .addParameter("reason", reason);
-        }
-        
         public SessionInvalidData(String message) {
             super(ErrorCode.RUNNING_SESSION_INVALID_DATA, message);
+        }
+        
+        public SessionInvalidData(String field, Object value) {
+            super(ErrorCode.RUNNING_SESSION_INVALID_DATA, 
+                  String.format("잘못된 러닝 세션 데이터 - %s: %s", field, value));
+            addParameter("field", field)
+                .addParameter("value", value);
         }
     }
     
@@ -103,54 +102,54 @@ public class RunningException extends TurtleRunException {
     /**
      * 러닝 세션 시간 관련 예외
      */
-    public static class SessionDurationInvalid extends RunningException {
-        public SessionDurationInvalid(String reason) {
+    public static class DurationInvalid extends RunningException {
+        public DurationInvalid(Integer duration, String reason) {
+            super(ErrorCode.RUNNING_SESSION_DURATION_INVALID, 
+                  String.format("잘못된 러닝 세션 시간: %d, 이유: %s", duration, reason));
+            addParameter("duration", duration)
+                .addParameter("reason", reason);
+        }
+        
+        public DurationInvalid(String reason) {
             super(ErrorCode.RUNNING_SESSION_DURATION_INVALID, 
                   String.format("잘못된 러닝 세션 시간: %s", reason));
             addParameter("reason", reason);
-        }
-        
-        public SessionDurationInvalid(Integer duration, String reason) {
-            super(ErrorCode.RUNNING_SESSION_DURATION_INVALID, 
-                  String.format("잘못된 러닝 세션 시간: %d초, 이유: %s", duration, reason));
-            addParameter("duration", duration)
-                .addParameter("reason", reason);
         }
     }
     
     /**
      * 러닝 세션 거리 관련 예외
      */
-    public static class SessionDistanceInvalid extends RunningException {
-        public SessionDistanceInvalid(String reason) {
+    public static class DistanceInvalid extends RunningException {
+        public DistanceInvalid(java.math.BigDecimal distance, String reason) {
+            super(ErrorCode.RUNNING_SESSION_DISTANCE_INVALID, 
+                  String.format("잘못된 러닝 세션 거리: %s, 이유: %s", distance, reason));
+            addParameter("distance", distance)
+                .addParameter("reason", reason);
+        }
+        
+        public DistanceInvalid(String reason) {
             super(ErrorCode.RUNNING_SESSION_DISTANCE_INVALID, 
                   String.format("잘못된 러닝 세션 거리: %s", reason));
             addParameter("reason", reason);
-        }
-        
-        public SessionDistanceInvalid(Double distance, String reason) {
-            super(ErrorCode.RUNNING_SESSION_DISTANCE_INVALID, 
-                  String.format("잘못된 러닝 세션 거리: %.2fm, 이유: %s", distance, reason));
-            addParameter("distance", distance)
-                .addParameter("reason", reason);
         }
     }
     
     /**
      * 러닝 세션 칼로리 관련 예외
      */
-    public static class SessionCaloriesInvalid extends RunningException {
-        public SessionCaloriesInvalid(String reason) {
-            super(ErrorCode.RUNNING_SESSION_CALORIES_INVALID, 
-                  String.format("잘못된 러닝 세션 칼로리: %s", reason));
-            addParameter("reason", reason);
-        }
-        
-        public SessionCaloriesInvalid(Integer calories, String reason) {
+    public static class CaloriesInvalid extends RunningException {
+        public CaloriesInvalid(Integer calories, String reason) {
             super(ErrorCode.RUNNING_SESSION_CALORIES_INVALID, 
                   String.format("잘못된 러닝 세션 칼로리: %d, 이유: %s", calories, reason));
             addParameter("calories", calories)
                 .addParameter("reason", reason);
+        }
+        
+        public CaloriesInvalid(String reason) {
+            super(ErrorCode.RUNNING_SESSION_CALORIES_INVALID, 
+                  String.format("잘못된 러닝 세션 칼로리: %s", reason));
+            addParameter("reason", reason);
         }
     }
     
