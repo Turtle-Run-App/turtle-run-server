@@ -82,3 +82,4 @@ public class HealthKitSyncRequestDto {
         private String metadata;
     }
 }
+
