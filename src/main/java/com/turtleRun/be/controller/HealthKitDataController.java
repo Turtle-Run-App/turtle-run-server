@@ -1,5 +1,6 @@
 package com.turtleRun.be.controller;
 
+import com.turtleRun.be.healthkit.exception.HealthKitException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -58,36 +59,31 @@ public class HealthKitDataController {
             @RequestParam(required = false) String startDate,
             @Parameter(required = false) String endDate) {
         
-        try {
-            // TODO: 사용자 HealthKit 데이터 조회 로직 구현
-            // HealthKitDataResponseDto data = healthKitDataService.getUserHealthKitData(userId, startDate, endDate);
-            
-            HealthKitDataResponseDto response = HealthKitDataResponseDto.builder()
-                    .success(true)
-                    .message("HealthKit 데이터를 성공적으로 조회했습니다.")
-                    .timestamp(java.time.LocalDateTime.now())
-                    .data(HealthKitDataResponseDto.UserHealthKitData.builder()
-                            .userId(Long.valueOf(userId.replace("user", "")))
-                            .startDate(startDate != null ? java.time.LocalDateTime.parse(startDate + "T00:00:00") : null)
-                            .endDate(endDate != null ? java.time.LocalDateTime.parse(endDate + "T23:59:59") : null)
-                            .runningSessions(new java.util.ArrayList<>())
-                            .heartRateData(new java.util.ArrayList<>())
-                            .gpsRoutes(new java.util.ArrayList<>())
-                            .totalDataCount(0)
-                            .build())
-                    .build();
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            HealthKitDataResponseDto errorResponse = HealthKitDataResponseDto.builder()
-                    .success(false)
-                    .message("HealthKit 데이터 조회 중 오류가 발생했습니다: " + e.getMessage())
-                    .timestamp(java.time.LocalDateTime.now())
-                    .build();
-            
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+        // 사용자 ID 검증
+        validateUserId(userId);
+        
+        // 날짜 형식 검증
+        validateDateRange(startDate, endDate);
+        
+        // TODO: 사용자 HealthKit 데이터 조회 로직 구현
+        // HealthKitDataResponseDto data = healthKitDataService.getUserHealthKitData(userId, startDate, endDate);
+        
+        HealthKitDataResponseDto response = HealthKitDataResponseDto.builder()
+                .success(true)
+                .message("HealthKit 데이터를 성공적으로 조회했습니다.")
+                .timestamp(java.time.LocalDateTime.now())
+                .data(HealthKitDataResponseDto.UserHealthKitData.builder()
+                        .userId(Long.valueOf(userId.replace("user", "")))
+                        .startDate(startDate != null ? java.time.LocalDateTime.parse(startDate + "T00:00:00") : null)
+                        .endDate(endDate != null ? java.time.LocalDateTime.parse(endDate + "T23:59:59") : null)
+                        .runningSessions(new java.util.ArrayList<>())
+                        .heartRateData(new java.util.ArrayList<>())
+                        .gpsRoutes(new java.util.ArrayList<>())
+                        .totalDataCount(0)
+                        .build())
+                .build();
+        
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -123,36 +119,34 @@ public class HealthKitDataController {
             @Parameter(description = "종료 날짜 (YYYY-MM-DD)", example = "2024-01-31")
             @RequestParam(required = false) String endDate) {
         
-        try {
-            // TODO: 특정 데이터 타입별 조회 로직 구현
-            // HealthKitDataResponseDto data = healthKitDataService.getHealthKitDataByType(userId, dataType, startDate, endDate);
-            
-            HealthKitDataResponseDto response = HealthKitDataResponseDto.builder()
-                    .success(true)
-                    .message("HealthKit 데이터를 성공적으로 조회했습니다.")
-                    .timestamp(java.time.LocalDateTime.now())
-                    .data(HealthKitDataResponseDto.UserHealthKitData.builder()
-                            .userId(Long.valueOf(userId.replace("user", "")))
-                            .startDate(startDate != null ? java.time.LocalDateTime.parse(startDate + "T00:00:00") : null)
-                            .endDate(endDate != null ? java.time.LocalDateTime.parse(endDate + "T23:59:59") : null)
-                            .runningSessions(new java.util.ArrayList<>())
-                            .heartRateData(new java.util.ArrayList<>())
-                            .gpsRoutes(new java.util.ArrayList<>())
-                            .totalDataCount(0)
-                            .build())
-                    .build();
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            HealthKitDataResponseDto errorResponse = HealthKitDataResponseDto.builder()
-                    .success(false)
-                    .message("HealthKit 데이터 조회 중 오류가 발생했습니다: " + e.getMessage())
-                    .timestamp(java.time.LocalDateTime.now())
-                    .build();
-            
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+        // 사용자 ID 검증
+        validateUserId(userId);
+        
+        // 데이터 타입 검증
+        validateDataType(dataType);
+        
+        // 날짜 형식 검증
+        validateDateRange(startDate, endDate);
+        
+        // TODO: 특정 데이터 타입별 조회 로직 구현
+        // HealthKitDataResponseDto data = healthKitDataService.getHealthKitDataByType(userId, dataType, startDate, endDate);
+        
+        HealthKitDataResponseDto response = HealthKitDataResponseDto.builder()
+                .success(true)
+                .message("HealthKit 데이터를 성공적으로 조회했습니다.")
+                .timestamp(java.time.LocalDateTime.now())
+                .data(HealthKitDataResponseDto.UserHealthKitData.builder()
+                        .userId(Long.valueOf(userId.replace("user", "")))
+                        .startDate(startDate != null ? java.time.LocalDateTime.parse(startDate + "T00:00:00") : null)
+                        .endDate(endDate != null ? java.time.LocalDateTime.parse(endDate + "T23:59:59") : null)
+                        .runningSessions(new java.util.ArrayList<>())
+                        .heartRateData(new java.util.ArrayList<>())
+                        .gpsRoutes(new java.util.ArrayList<>())
+                        .totalDataCount(0)
+                        .build())
+                .build();
+        
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -184,38 +178,33 @@ public class HealthKitDataController {
             @Parameter(description = "통계 기간", example = "weekly", schema = @Schema(allowableValues = {"daily", "weekly", "monthly", "yearly"}))
             @RequestParam(required = false) String period) {
         
-        try {
-            // TODO: HealthKit 통계 조회 로직 구현
-            // HealthKitDataResponseDto stats = healthKitDataService.getUserHealthKitStats(userId, period);
-            
-            HealthKitDataResponseDto response = HealthKitDataResponseDto.builder()
-                    .success(true)
-                    .message("HealthKit 통계를 성공적으로 조회했습니다.")
-                    .timestamp(java.time.LocalDateTime.now())
-                    .data(HealthKitDataResponseDto.HealthKitStatsData.builder()
-                            .userId(Long.valueOf(userId.replace("user", "")))
-                            .period(period != null ? period : "weekly")
-                            .totalRunningSessions(0)
-                            .totalDuration(0)
-                            .totalDistance(java.math.BigDecimal.ZERO)
-                            .totalCalories(0)
-                            .averageHeartRate(0)
-                            .maxHeartRate(0)
-                            .minHeartRate(0)
-                            .build())
-                    .build();
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            HealthKitDataResponseDto errorResponse = HealthKitDataResponseDto.builder()
-                    .success(false)
-                    .message("HealthKit 통계 조회 중 오류가 발생했습니다: " + e.getMessage())
-                    .timestamp(java.time.LocalDateTime.now())
-                    .build();
-            
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+        // 사용자 ID 검증
+        validateUserId(userId);
+        
+        // 통계 기간 검증
+        validatePeriod(period);
+        
+        // TODO: HealthKit 통계 조회 로직 구현
+        // HealthKitDataResponseDto stats = healthKitDataService.getUserHealthKitStats(userId, period);
+        
+        HealthKitDataResponseDto response = HealthKitDataResponseDto.builder()
+                .success(true)
+                .message("HealthKit 통계를 성공적으로 조회했습니다.")
+                .timestamp(java.time.LocalDateTime.now())
+                .data(HealthKitDataResponseDto.HealthKitStatsData.builder()
+                        .userId(Long.valueOf(userId.replace("user", "")))
+                        .period(period != null ? period : "weekly")
+                        .totalRunningSessions(0)
+                        .totalDuration(0)
+                        .totalDistance(java.math.BigDecimal.ZERO)
+                        .totalCalories(0)
+                        .averageHeartRate(0)
+                        .maxHeartRate(0)
+                        .minHeartRate(0)
+                        .build())
+                .build();
+        
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -257,33 +246,127 @@ public class HealthKitDataController {
             )
             @RequestBody HealthKitSyncRequestDto.HealthKitData validationRequest) {
         
-        try {
-            // TODO: HealthKit 데이터 검증 로직 구현
-            // HealthKitDataResponseDto validationResult = healthKitDataService.validateHealthKitData(validationRequest);
-            
-            HealthKitDataResponseDto response = HealthKitDataResponseDto.builder()
-                    .success(true)
-                    .message("HealthKit 데이터 검증을 완료했습니다.")
-                    .timestamp(java.time.LocalDateTime.now())
-                    .data(HealthKitDataResponseDto.DataValidationResult.builder()
-                            .isValid(true)
-                            .validatedDataCount(0)
-                            .errorDataCount(0)
-                            .errors(new java.util.ArrayList<>())
-                            .validationTime(java.time.LocalDateTime.now())
-                            .build())
-                    .build();
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            HealthKitDataResponseDto errorResponse = HealthKitDataResponseDto.builder()
-                    .success(false)
-                    .message("HealthKit 데이터 검증 중 오류가 발생했습니다: " + e.getMessage())
-                    .timestamp(java.time.LocalDateTime.now())
-                    .build();
-            
-            return ResponseEntity.badRequest().body(errorResponse);
+        // 검증 요청 데이터 검증
+        validateHealthKitDataRequest(validationRequest);
+        
+        // TODO: HealthKit 데이터 검증 로직 구현
+        // HealthKitDataResponseDto validationResult = healthKitDataService.validateHealthKitData(validationRequest);
+        
+        HealthKitDataResponseDto response = HealthKitDataResponseDto.builder()
+                .success(true)
+                .message("HealthKit 데이터 검증을 완료했습니다.")
+                .timestamp(java.time.LocalDateTime.now())
+                .data(HealthKitDataResponseDto.DataValidationResult.builder()
+                        .isValid(true)
+                        .validatedDataCount(0)
+                        .errorDataCount(0)
+                        .errors(new java.util.ArrayList<>())
+                        .validationTime(java.time.LocalDateTime.now())
+                        .build())
+                .build();
+        
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 사용자 ID 검증
+     */
+    private void validateUserId(String userId) {
+        if (userId == null || userId.trim().isEmpty()) {
+            throw new HealthKitException.InvalidData("사용자 ID는 필수입니다");
+        }
+
+        if (!userId.startsWith("user")) {
+            throw new HealthKitException.InvalidData("사용자 ID 형식이 올바르지 않습니다", "userId", userId);
+        }
+    }
+
+    /**
+     * 데이터 타입 검증
+     */
+    private void validateDataType(String dataType) {
+        if (dataType == null || dataType.trim().isEmpty()) {
+            throw new HealthKitException.InvalidData("데이터 타입은 필수입니다");
+        }
+
+        String[] validTypes = {"steps", "distance", "heartRate", "calories"};
+        boolean isValid = false;
+        for (String type : validTypes) {
+            if (type.equals(dataType)) {
+                isValid = true;
+                break;
+            }
+        }
+
+        if (!isValid) {
+            throw new HealthKitException.InvalidData("지원하지 않는 데이터 타입입니다", "dataType", dataType);
+        }
+    }
+
+    /**
+     * 날짜 범위 검증
+     */
+    private void validateDateRange(String startDate, String endDate) {
+        if (startDate != null && endDate != null) {
+            try {
+                java.time.LocalDateTime start = java.time.LocalDateTime.parse(startDate + "T00:00:00");
+                java.time.LocalDateTime end = java.time.LocalDateTime.parse(endDate + "T23:59:59");
+                
+                if (start.isAfter(end)) {
+                    throw new HealthKitException.InvalidData("시작 날짜는 종료 날짜보다 이전이어야 합니다");
+                }
+            } catch (Exception e) {
+                throw new HealthKitException.InvalidData("날짜 형식이 올바르지 않습니다 (YYYY-MM-DD)");
+            }
+        }
+    }
+
+    /**
+     * 통계 기간 검증
+     */
+    private void validatePeriod(String period) {
+        if (period != null) {
+            String[] validPeriods = {"daily", "weekly", "monthly", "yearly"};
+            boolean isValid = false;
+            for (String p : validPeriods) {
+                if (p.equals(period)) {
+                    isValid = true;
+                    break;
+                }
+            }
+
+            if (!isValid) {
+                throw new HealthKitException.InvalidData("지원하지 않는 통계 기간입니다", "period", period);
+            }
+        }
+    }
+
+    /**
+     * HealthKit 데이터 검증 요청 검증
+     */
+    private void validateHealthKitDataRequest(HealthKitSyncRequestDto.HealthKitData validationRequest) {
+        if (validationRequest == null) {
+            throw new HealthKitException.InvalidData("검증할 데이터가 null입니다");
+        }
+
+        if (validationRequest.getDataType() == null || validationRequest.getDataType().trim().isEmpty()) {
+            throw new HealthKitException.InvalidData("dataType은 필수입니다");
+        }
+
+        if (validationRequest.getValue() == null) {
+            throw new HealthKitException.InvalidData("value는 필수입니다");
+        }
+
+        if (validationRequest.getStartTime() == null) {
+            throw new HealthKitException.InvalidData("startTime은 필수입니다");
+        }
+
+        if (validationRequest.getEndTime() == null) {
+            throw new HealthKitException.InvalidData("endTime은 필수입니다");
+        }
+
+        if (validationRequest.getStartTime().isAfter(validationRequest.getEndTime())) {
+            throw new HealthKitException.InvalidData("startTime은 endTime보다 이전이어야 합니다");
         }
     }
 } 
