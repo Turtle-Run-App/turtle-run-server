@@ -4,7 +4,9 @@ import com.turtleRun.be.auth.application.dto.LoginRequestDto;
 import com.turtleRun.be.auth.application.dto.LoginResponseDto;
 import com.turtleRun.be.auth.application.dto.SignUpRequestDto;
 import com.turtleRun.be.auth.application.dto.SignUpResponseDto;
+import com.turtleRun.be.auth.application.dto.UserInfoDto;
 import com.turtleRun.be.auth.application.service.AuthApplicationService;
+import com.turtleRun.be.auth.infrastructure.security.CustomUserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -124,7 +127,7 @@ public class AuthController {
     /**
      * 현재 사용자 정보 조회 (JWT 토큰 기반)
      * 
-     * @param authorization Authorization 헤더 (Bearer 토큰)
+     * @param authentication Spring Security 인증 정보
      * @return 현재 사용자 정보
      */
     @GetMapping("/me")
@@ -136,23 +139,30 @@ public class AuthController {
         @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음"),
         @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
-    public ResponseEntity<SignUpResponseDto> getCurrentUser(@RequestHeader("Authorization") String authorization) {
+    public ResponseEntity<SignUpResponseDto> getCurrentUser(Authentication authentication) {
         logger.info("현재 사용자 정보 조회 요청");
         
-        // Authorization 헤더에서 Bearer 토큰 추출
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            logger.warn("잘못된 Authorization 헤더");
-            SignUpResponseDto response = SignUpResponseDto.failure("인증 토큰이 필요합니다");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-        }
-        
-        String token = authorization.substring(7); // "Bearer " 제거
-        
         try {
-            // JWT 토큰에서 사용자 ID 추출 (실제로는 JwtTokenService를 주입받아 사용)
-            // 여기서는 간단히 예시로 처리
-            SignUpResponseDto response = SignUpResponseDto.failure("JWT 토큰 처리 기능은 5단계에서 구현됩니다");
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(response);
+            if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserPrincipal)) {
+                logger.warn("인증되지 않은 사용자");
+                SignUpResponseDto response = SignUpResponseDto.failure("인증이 필요합니다");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+            
+            CustomUserPrincipal userPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+            String userId = userPrincipal.getUserId();
+            
+            logger.info("현재 사용자 정보 조회: {}", userId);
+            
+            SignUpResponseDto response = authApplicationService.getUserInfo(userId);
+            
+            if (response.isSuccess()) {
+                logger.info("현재 사용자 정보 조회 성공: {}", userId);
+                return ResponseEntity.ok(response);
+            } else {
+                logger.warn("현재 사용자 정보 조회 실패: {} - {}", userId, response.getMessage());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
             
         } catch (Exception e) {
             logger.error("현재 사용자 정보 조회 중 오류 발생", e);
