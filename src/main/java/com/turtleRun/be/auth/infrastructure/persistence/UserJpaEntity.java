@@ -58,7 +58,7 @@ public class UserJpaEntity {
     private LocalDateTime updatedAt;
 
     // JPA용 기본 생성자
-    protected UserJpaEntity() {}
+    public UserJpaEntity() {}
 
     // 도메인 Entity로부터 생성
     public static UserJpaEntity from(User user) {

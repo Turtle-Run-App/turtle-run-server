@@ -1,11 +1,11 @@
 package com.turtleRun.be.auth.application.service;
 
 import com.turtleRun.be.auth.domain.entity.User;
+import com.turtleRun.be.auth.infrastructure.config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -20,14 +20,14 @@ import java.util.Map;
 @Service
 public class JwtTokenService {
     
-    @Value("${jwt.secret:mySecretKey}")
-    private String secret;
+    private final JwtProperties jwtProperties;
     
-    @Value("${jwt.expiration:86400000}") // 24시간 (밀리초)
-    private long expiration;
+    public JwtTokenService(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+    }
     
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        return Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
     }
     
     /**
@@ -55,7 +55,7 @@ public class JwtTokenService {
      */
     private String createToken(Map<String, Object> claims, String subject) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration);
+        Date expiryDate = new Date(now.getTime() + jwtProperties.getExpiration());
         
         return Jwts.builder()
                 .setClaims(claims)
@@ -151,6 +151,6 @@ public class JwtTokenService {
      * @return 만료 시간 (밀리초)
      */
     public long getExpirationTime() {
-        return expiration;
+        return jwtProperties.getExpiration();
     }
 }

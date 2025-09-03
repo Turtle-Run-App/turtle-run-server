@@ -28,6 +28,16 @@ public class BusinessException extends TurtleRunException {
     }
     
     /**
+     * 잘못된 요청 예외 생성 (편의 메서드)
+     * 
+     * @param message 에러 메시지
+     * @return BusinessException 인스턴스
+     */
+    public static BusinessException badRequest(String message) {
+        return new BusinessException(ErrorCode.INVALID_INPUT, message);
+    }
+    
+    /**
      * 잘못된 입력값 예외 생성 (편의 메서드)
      * 
      * @param fieldName 필드명

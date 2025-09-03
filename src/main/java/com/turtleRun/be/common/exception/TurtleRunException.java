@@ -35,6 +35,19 @@ public abstract class TurtleRunException extends RuntimeException {
     }
     
     /**
+     * 파라미터를 포함한 생성자
+     * 
+     * @param errorCode 에러 코드
+     * @param message 에러 메시지
+     * @param parameters 추가 파라미터들
+     */
+    protected TurtleRunException(ErrorCode errorCode, String message, Map<String, Object> parameters) {
+        super(message);
+        this.errorCode = errorCode;
+        this.parameters = new HashMap<>(parameters);
+    }
+    
+    /**
      * 원인 예외를 포함한 생성자
      * 
      * @param errorCode 에러 코드
