@@ -16,3 +16,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+# Swagger 설정
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  packages-to-scan: com.turtleRun.be.controller
