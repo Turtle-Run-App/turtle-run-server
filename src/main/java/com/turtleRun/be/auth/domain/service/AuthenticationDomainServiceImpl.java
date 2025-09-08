@@ -4,6 +4,7 @@ import com.turtleRun.be.auth.domain.entity.User;
 import com.turtleRun.be.auth.domain.valueobject.Email;
 import com.turtleRun.be.auth.domain.valueobject.Password;
 import com.turtleRun.be.auth.domain.valueobject.Username;
+import com.turtleRun.be.auth.exception.AuthException;
 import com.turtleRun.be.auth.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,12 +51,12 @@ public class AuthenticationDomainServiceImpl implements AuthenticationDomainServ
     public User register(User user) {
         // 이메일 중복 확인
         if (isEmailDuplicate(user.getEmail())) {
-            throw new IllegalArgumentException("Email already exists: " + user.getEmail().getValue());
+            throw new AuthException.EmailAlreadyExists(user.getEmail().getValue());
         }
         
         // 사용자명 중복 확인
         if (isUsernameDuplicate(user.getUsername())) {
-            throw new IllegalArgumentException("Username already exists: " + user.getUsername().getValue());
+            throw new AuthException.UsernameAlreadyExists(user.getUsername().getValue());
         }
         
         // 사용자 저장

@@ -134,6 +134,21 @@ public class JwtTokenService {
     }
     
     /**
+     * JWT 토큰의 기본 유효성을 검증합니다 (서명, 만료시간 등).
+     * 
+     * @param token JWT 토큰
+     * @return 유효성 여부
+     */
+    public Boolean validateToken(String token) {
+        try {
+            getAllClaimsFromToken(token);
+            return !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    /**
      * JWT 토큰의 유효성을 검증합니다.
      * 
      * @param token JWT 토큰

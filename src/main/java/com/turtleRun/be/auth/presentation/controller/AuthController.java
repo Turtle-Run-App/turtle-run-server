@@ -56,15 +56,10 @@ public class AuthController {
     public ResponseEntity<SignUpResponseDto> signUp(@Valid @RequestBody SignUpRequestDto request) {
         logger.info("회원가입 요청: {}", request.getEmail());
         
+        // 예외는 GlobalExceptionHandler가 처리하므로 성공 시에만 응답 반환
         SignUpResponseDto response = authApplicationService.signUp(request);
-        
-        if (response.isSuccess()) {
-            logger.info("회원가입 성공: {}", request.getEmail());
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } else {
-            logger.warn("회원가입 실패: {} - {}", request.getEmail(), response.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+        logger.info("회원가입 성공: {}", request.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
     /**
@@ -85,15 +80,10 @@ public class AuthController {
     public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
         logger.info("로그인 요청: {}", request.getUsernameOrEmail());
         
+        // 예외는 GlobalExceptionHandler가 처리하므로 성공 시에만 응답 반환
         LoginResponseDto response = authApplicationService.login(request);
-        
-        if (response.isSuccess()) {
-            logger.info("로그인 성공: {}", request.getUsernameOrEmail());
-            return ResponseEntity.ok(response);
-        } else {
-            logger.warn("로그인 실패: {} - {}", request.getUsernameOrEmail(), response.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-        }
+        logger.info("로그인 성공: {}", request.getUsernameOrEmail());
+        return ResponseEntity.ok(response);
     }
     
     /**
@@ -113,15 +103,10 @@ public class AuthController {
     public ResponseEntity<SignUpResponseDto> getUserInfo(@PathVariable String userId) {
         logger.info("사용자 정보 조회 요청: {}", userId);
         
+        // 예외는 GlobalExceptionHandler가 처리하므로 성공 시에만 응답 반환
         SignUpResponseDto response = authApplicationService.getUserInfo(userId);
-        
-        if (response.isSuccess()) {
-            logger.info("사용자 정보 조회 성공: {}", userId);
-            return ResponseEntity.ok(response);
-        } else {
-            logger.warn("사용자 정보 조회 실패: {} - {}", userId, response.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+        logger.info("사용자 정보 조회 성공: {}", userId);
+        return ResponseEntity.ok(response);
     }
     
     /**

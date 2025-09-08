@@ -4,6 +4,7 @@ import com.turtleRun.be.auth.application.dto.*;
 import com.turtleRun.be.auth.domain.entity.User;
 import com.turtleRun.be.auth.domain.service.AuthenticationDomainService;
 import com.turtleRun.be.auth.domain.valueobject.*;
+import com.turtleRun.be.auth.exception.AuthException;
 import com.turtleRun.be.auth.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +40,7 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
     @Transactional
     public SignUpResponseDto signUp(SignUpRequestDto request) {
         try {
-            // Value Objects 생성
+            // Value Objects 생성 및 검증
             Name name = Name.of(request.getName());
             Email email = Email.of(request.getEmail());
             Username username = Username.of(request.getUsername());
@@ -48,17 +49,22 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
             // 도메인 Entity 생성
             User user = new User(name, email, username, password);
             
-            // 도메인 서비스를 통한 회원가입 처리
+            // 도메인 서비스를 통한 회원가입 처리 (중복 검사 포함)
             User savedUser = authenticationDomainService.register(user);
             
             // 응답 DTO 생성
             UserInfoDto userInfo = createUserInfoDto(savedUser);
             return SignUpResponseDto.success(userInfo);
             
+        } catch (AuthException e) {
+            // 도메인 예외는 그대로 전달하여 GlobalExceptionHandler가 처리
+            throw e;
         } catch (IllegalArgumentException e) {
-            return SignUpResponseDto.failure(e.getMessage());
+            // Value Object 생성 실패는 400 Bad Request
+            throw new AuthException.InvalidInput(e.getMessage());
         } catch (Exception e) {
-            return SignUpResponseDto.failure("회원가입 중 오류가 발생했습니다: " + e.getMessage());
+            // 기타 예외는 500 Internal Server Error
+            throw new AuthException.InternalServerError("회원가입 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
     
@@ -70,16 +76,21 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
             Optional<User> userOpt = findUserByUsernameOrEmail(request.getUsernameOrEmail());
             
             if (userOpt.isEmpty()) {
-                return LoginResponseDto.failure("사용자를 찾을 수 없습니다");
+                throw new AuthException.UserNotFound(request.getUsernameOrEmail());
             }
             
             User user = userOpt.get();
+            
+            // 사용자 상태 확인
+            if (!user.isActive()) {
+                throw new AuthException.UserInactive();
+            }
             
             // 인증 처리
             boolean isAuthenticated = authenticationDomainService.authenticate(user, request.getPassword());
             
             if (!isAuthenticated) {
-                return LoginResponseDto.failure("비밀번호가 올바르지 않습니다");
+                throw new AuthException.InvalidCredentials();
             }
             
             // 마지막 로그인 시간 업데이트
@@ -94,8 +105,15 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
             UserInfoDto userInfo = createUserInfoDto(user);
             return LoginResponseDto.success(accessToken, expiresIn, userInfo);
             
+        } catch (AuthException e) {
+            // 도메인 예외는 그대로 전달하여 GlobalExceptionHandler가 처리
+            throw e;
+        } catch (IllegalArgumentException e) {
+            // Value Object 생성 실패는 400 Bad Request
+            throw new AuthException.InvalidInput(e.getMessage());
         } catch (Exception e) {
-            return LoginResponseDto.failure("로그인 중 오류가 발생했습니다: " + e.getMessage());
+            // 기타 예외는 500 Internal Server Error
+            throw new AuthException.InternalServerError("로그인 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
     
@@ -107,7 +125,7 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
             Optional<User> userOpt = userRepository.findById(domainUserId);
             
             if (userOpt.isEmpty()) {
-                return SignUpResponseDto.failure("사용자를 찾을 수 없습니다");
+                throw new AuthException.UserNotFound(userId);
             }
             
             User user = userOpt.get();
@@ -115,8 +133,15 @@ public class AuthApplicationServiceImpl implements AuthApplicationService {
             
             return new SignUpResponseDto(true, "사용자 정보 조회 성공", userInfo);
             
+        } catch (AuthException e) {
+            // 도메인 예외는 그대로 전달하여 GlobalExceptionHandler가 처리
+            throw e;
+        } catch (IllegalArgumentException e) {
+            // 잘못된 UUID 형식은 400 Bad Request
+            throw new AuthException.InvalidInput("잘못된 사용자 ID 형식입니다: " + e.getMessage());
         } catch (Exception e) {
-            return SignUpResponseDto.failure("사용자 정보 조회 중 오류가 발생했습니다: " + e.getMessage());
+            // 기타 예외는 500 Internal Server Error
+            throw new AuthException.InternalServerError("사용자 정보 조회 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
     

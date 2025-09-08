@@ -48,21 +48,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
             
-            if (jwt != null && jwtTokenService.validateToken(jwt, null)) {
-                String username = jwtTokenService.getUsernameFromToken(jwt);
-                
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (jwt != null) {
+                // JWT 토큰 기본 검증 (서명, 만료시간 등)
+                if (jwtTokenService.validateToken(jwt)) {
+                    String username = jwtTokenService.getUsernameFromToken(jwt);
                     
-                    if (jwtTokenService.validateToken(jwt, userDetails.getUsername())) {
-                        UsernamePasswordAuthenticationToken authentication = 
-                            new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                         
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                        logger.debug("JWT 인증 성공: {}", username);
+                        // 사용자 정보와 함께 토큰 재검증
+                        if (jwtTokenService.validateToken(jwt, userDetails.getUsername())) {
+                            UsernamePasswordAuthenticationToken authentication = 
+                                new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                            
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                            logger.debug("JWT 인증 성공: {}", username);
+                        } else {
+                            logger.warn("JWT 토큰 검증 실패: {}", username);
+                        }
                     }
+                } else {
+                    logger.warn("JWT 토큰이 유효하지 않습니다");
                 }
             }
         } catch (Exception e) {

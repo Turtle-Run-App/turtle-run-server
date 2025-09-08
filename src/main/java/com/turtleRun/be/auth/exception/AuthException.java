@@ -71,4 +71,16 @@ public class AuthException extends TurtleRunException {
             super(ErrorCode.AUTH_EMAIL_NOT_VERIFIED, "이메일이 인증되지 않았습니다");
         }
     }
+    
+    public static class InvalidInput extends AuthException {
+        public InvalidInput(String message) {
+            super(ErrorCode.AUTH_INVALID_INPUT, "잘못된 입력입니다: " + message, Map.of("message", message));
+        }
+    }
+    
+    public static class InternalServerError extends AuthException {
+        public InternalServerError(String message) {
+            super(ErrorCode.AUTH_INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다: " + message, Map.of("message", message));
+        }
+    }
 }

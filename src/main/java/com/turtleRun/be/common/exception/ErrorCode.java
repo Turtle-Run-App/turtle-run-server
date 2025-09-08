@@ -78,7 +78,9 @@ public enum ErrorCode {
     AUTH_USER_INACTIVE("A007", "비활성화된 사용자입니다", HttpStatus.FORBIDDEN),
     AUTH_EMAIL_NOT_VERIFIED("A008", "이메일이 인증되지 않았습니다", HttpStatus.FORBIDDEN),
     AUTH_INVALID_PASSWORD("A009", "잘못된 비밀번호 형식입니다", HttpStatus.BAD_REQUEST),
-    AUTH_ACCOUNT_LOCKED("A010", "계정이 잠겨있습니다", HttpStatus.FORBIDDEN);
+    AUTH_ACCOUNT_LOCKED("A010", "계정이 잠겨있습니다", HttpStatus.FORBIDDEN),
+    AUTH_INVALID_INPUT("A011", "잘못된 입력입니다", HttpStatus.BAD_REQUEST),
+    AUTH_INTERNAL_SERVER_ERROR("A012", "인증 서버 내부 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
     
     /**
      * 에러 코드
