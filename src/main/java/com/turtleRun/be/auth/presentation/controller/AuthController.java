@@ -6,6 +6,7 @@ import com.turtleRun.be.auth.application.dto.SignUpRequestDto;
 import com.turtleRun.be.auth.application.dto.SignUpResponseDto;
 import com.turtleRun.be.auth.application.dto.UserInfoDto;
 import com.turtleRun.be.auth.application.service.AuthApplicationService;
+import com.turtleRun.be.auth.exception.AuthException;
 import com.turtleRun.be.auth.infrastructure.security.CustomUserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -127,32 +128,19 @@ public class AuthController {
     public ResponseEntity<SignUpResponseDto> getCurrentUser(Authentication authentication) {
         logger.info("현재 사용자 정보 조회 요청");
         
-        try {
-            if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserPrincipal)) {
-                logger.warn("인증되지 않은 사용자");
-                SignUpResponseDto response = SignUpResponseDto.failure("인증이 필요합니다");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-            }
-            
-            CustomUserPrincipal userPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
-            String userId = userPrincipal.getUserId();
-            
-            logger.info("현재 사용자 정보 조회: {}", userId);
-            
-            SignUpResponseDto response = authApplicationService.getUserInfo(userId);
-            
-            if (response.isSuccess()) {
-                logger.info("현재 사용자 정보 조회 성공: {}", userId);
-                return ResponseEntity.ok(response);
-            } else {
-                logger.warn("현재 사용자 정보 조회 실패: {} - {}", userId, response.getMessage());
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-            
-        } catch (Exception e) {
-            logger.error("현재 사용자 정보 조회 중 오류 발생", e);
-            SignUpResponseDto response = SignUpResponseDto.failure("사용자 정보 조회 중 오류가 발생했습니다");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserPrincipal)) {
+            logger.warn("인증되지 않은 사용자");
+            throw new AuthException.InvalidCredentials();
         }
+        
+        CustomUserPrincipal userPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+        String userId = userPrincipal.getUserId();
+        
+        logger.info("현재 사용자 정보 조회: {}", userId);
+        
+        // 예외는 GlobalExceptionHandler가 처리하므로 성공 시에만 응답 반환
+        SignUpResponseDto response = authApplicationService.getUserInfo(userId);
+        logger.info("현재 사용자 정보 조회 성공: {}", userId);
+        return ResponseEntity.ok(response);
     }
 }
