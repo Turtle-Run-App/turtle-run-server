@@ -1,7 +1,4 @@
-package com.turtleRun.be.bulkinitial.exception;
-
-import com.turtleRun.be.common.exception.TurtleRunException;
-import com.turtleRun.be.common.exception.ErrorCode;
+package com.turtleRun.be.common.exception;
 
 import java.time.LocalDateTime;
 import java.util.List;

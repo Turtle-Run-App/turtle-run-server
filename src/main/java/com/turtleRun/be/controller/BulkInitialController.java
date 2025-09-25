@@ -1,6 +1,6 @@
 package com.turtleRun.be.controller;
 
-import com.turtleRun.be.bulkinitial.exception.BulkInitialException;
+import com.turtleRun.be.common.exception.BulkInitialException;
 import com.turtleRun.be.common.model.SaveBulkInitialRequestDto;
 import com.turtleRun.be.common.model.SaveBulkInitialResponseDto;
 import com.turtleRun.be.running.application.service.EndRunningSessionService;
@@ -10,7 +10,6 @@ import com.turtleRun.be.running.domain.entity.RunningSession;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -68,12 +67,14 @@ public class BulkInitialController {
             )
             @RequestBody SaveBulkInitialRequestDto request) {
 
+
+        // request 검증
+        validateBulkInitialRequest(request);
+
         log.info("러닝 데이터 대량 동기화 시작: userId={}, sessionCount={}", 
                 request.getUserId(), 
                 request.getRunningSessions() != null ? request.getRunningSessions().size() : 0);
 
-        // 입력 데이터 검증
-        validateBulkInitialRequest(request);
 
         LocalDateTime syncStartTime = LocalDateTime.now();
         List<SaveBulkInitialResponseDto.SuccessfulSession> successfulSessions = new ArrayList<>();
@@ -258,7 +259,7 @@ public class BulkInitialController {
     /**
      * 러닝 데이터 초기 동기화 요청 데이터 검증
      */
-    private void validateBulkInitialRequest(SaveBulkInitialRequestDto request) {
+    private void validateBulkInitialRequest(SaveBulkInitialRequestDto request) throws BulkInitialException{
         if (request == null) {
             throw new BulkInitialException.InvalidData("요청 데이터가 null입니다");
         }
