@@ -2,6 +2,9 @@ server:
   port: 8081
 
 spring:
+  sql:
+    init:
+      mode: always
   datasource:
     url: jdbc:postgresql://localhost:5432/turtle-run-app-db
     username: turtle-run-app-db
@@ -13,6 +16,7 @@ spring:
     show-sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: true

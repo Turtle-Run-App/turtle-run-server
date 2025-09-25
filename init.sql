@@ -1,0 +1,1 @@
+insert into player (player_id) values (1004);

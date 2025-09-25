@@ -53,10 +53,15 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/error").permitAll()
-                
+
+                // 테스트를 위해 permit all
+                .requestMatchers("/api/**").permitAll()
+
                 // 인증이 필요한 엔드포인트
                 .requestMatchers("/api/auth/me", "/api/auth/user/**").authenticated()
-                .requestMatchers("/api/**").authenticated()
+
+                // 추후에 authenticate
+                //.requestMatchers("/api/**").authenticated()
                 
                 // 기타 모든 요청은 인증 필요
                 .anyRequest().authenticated()
