@@ -66,7 +66,21 @@ public enum ErrorCode {
     BULK_INITIAL_SYNC_TIMEOUT("B007", "대량 동기화 시간이 초과되었습니다", HttpStatus.REQUEST_TIMEOUT),
     BULK_INITIAL_PARTIAL_SUCCESS("B008", "일부 데이터만 동기화되었습니다", HttpStatus.PARTIAL_CONTENT),
     BULK_INITIAL_DUPLICATE_DATA("B009", "중복된 데이터가 포함되어 있습니다", HttpStatus.CONFLICT),
-    BULK_INITIAL_INVALID_USER_STATUS("B010", "사용자 상태가 동기화에 적합하지 않습니다", HttpStatus.BAD_REQUEST);
+    BULK_INITIAL_INVALID_USER_STATUS("B010", "사용자 상태가 동기화에 적합하지 않습니다", HttpStatus.BAD_REQUEST),
+    
+    // ===== Auth Domain 에러 코드 (A001~A099) =====
+    AUTH_USER_NOT_FOUND("A001", "사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
+    AUTH_INVALID_CREDENTIALS("A002", "잘못된 인증 정보입니다", HttpStatus.UNAUTHORIZED),
+    AUTH_EMAIL_ALREADY_EXISTS("A003", "이미 존재하는 이메일입니다", HttpStatus.CONFLICT),
+    AUTH_USERNAME_ALREADY_EXISTS("A004", "이미 존재하는 사용자명입니다", HttpStatus.CONFLICT),
+    AUTH_INVALID_TOKEN("A005", "유효하지 않은 토큰입니다", HttpStatus.UNAUTHORIZED),
+    AUTH_TOKEN_EXPIRED("A006", "토큰이 만료되었습니다", HttpStatus.UNAUTHORIZED),
+    AUTH_USER_INACTIVE("A007", "비활성화된 사용자입니다", HttpStatus.FORBIDDEN),
+    AUTH_EMAIL_NOT_VERIFIED("A008", "이메일이 인증되지 않았습니다", HttpStatus.FORBIDDEN),
+    AUTH_INVALID_PASSWORD("A009", "잘못된 비밀번호 형식입니다", HttpStatus.BAD_REQUEST),
+    AUTH_ACCOUNT_LOCKED("A010", "계정이 잠겨있습니다", HttpStatus.FORBIDDEN),
+    AUTH_INVALID_INPUT("A011", "잘못된 입력입니다", HttpStatus.BAD_REQUEST),
+    AUTH_INTERNAL_SERVER_ERROR("A012", "인증 서버 내부 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
     
     /**
      * 에러 코드
@@ -120,3 +134,4 @@ public enum ErrorCode {
         return null;
     }
 }
+

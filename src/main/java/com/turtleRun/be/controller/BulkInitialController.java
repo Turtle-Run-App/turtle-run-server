@@ -1,6 +1,7 @@
 package com.turtleRun.be.controller;
 
 import com.turtleRun.be.common.exception.BulkInitialException;
+import com.turtleRun.be.common.exception.BusinessException;
 import com.turtleRun.be.common.model.SaveBulkInitialRequestDto;
 import com.turtleRun.be.common.model.SaveBulkInitialResponseDto;
 import com.turtleRun.be.running.application.service.EndRunningSessionService;
@@ -261,35 +262,31 @@ public class BulkInitialController {
      */
     private void validateBulkInitialRequest(SaveBulkInitialRequestDto request) throws BulkInitialException{
         if (request == null) {
-            throw new BulkInitialException.InvalidData("요청 데이터가 null입니다");
+            throw BusinessException.badRequest("요청 데이터가 null입니다");
         }
 
         if (request.getUserId() == null) {
-            throw new BulkInitialException.InvalidData("userId는 필수입니다");
+            throw BusinessException.badRequest("userId는 필수입니다");
         }
 
         if (request.getSyncStartTime() == null) {
-            throw new BulkInitialException.InvalidData("syncStartTime은 필수입니다");
+            throw BusinessException.badRequest("syncStartTime은 필수입니다");
         }
 
         if (request.getRunningSessions() == null || request.getRunningSessions().isEmpty()) {
-            throw new BulkInitialException.InvalidData("runningSessions는 비어있을 수 없습니다");
+            throw BusinessException.badRequest("runningSessions는 비어있을 수 없습니다");
         }
 
         // 동기화 기간 검증 (30일 이내)
         LocalDateTime now = LocalDateTime.now();
         if (request.getSyncStartTime().isBefore(now.minusDays(30))) {
-            throw new BulkInitialException.InvalidSyncPeriod(
-                request.getSyncStartTime(), 
-                now, 
-                "동기화 시작 시간은 현재 시점으로부터 30일 이내여야 합니다"
-            );
+            throw BusinessException.badRequest("동기화 시작 시간은 현재 시점으로부터 30일 이내여야 합니다");
         }
 
         // 데이터 크기 검증
         int totalSessions = request.getRunningSessions().size();
         if (totalSessions > 100) {
-            throw new BulkInitialException.DataTooLarge((long) totalSessions, 100L, "개");
+            throw BusinessException.badRequest("동기화할 세션 수가 너무 많습니다. 최대 100개까지 허용됩니다.");
         }
     }
 }

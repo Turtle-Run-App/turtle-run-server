@@ -1,5 +1,6 @@
 package com.turtleRun.be.common.exception;
 
+import com.turtleRun.be.auth.exception.AuthException;
 import com.turtleRun.be.common.model.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,52 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(e.getHttpStatus())
                 .body(errorResponse);
+    }
+    
+    /**
+     * AuthException 처리
+     */
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthException(AuthException e) {
+        log.error("Auth Exception 발생: {}", e.getMessage(), e);
+        
+        ErrorCode errorCode = determineAuthErrorCode(e);
+        
+        ErrorResponseDto errorResponse = ErrorResponseDto.builder()
+                .success(false)
+                .timestamp(LocalDateTime.now())
+                .errorCode(errorCode.getCode())
+                .message(e.getMessage())
+                .build();
+        
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(errorResponse);
+    }
+    
+    /**
+     * AuthException의 타입에 따라 적절한 ErrorCode를 결정
+     */
+    private ErrorCode determineAuthErrorCode(AuthException e) {
+        if (e instanceof AuthException.UserNotFound) {
+            return ErrorCode.AUTH_USER_NOT_FOUND;
+        } else if (e instanceof AuthException.InvalidCredentials) {
+            return ErrorCode.AUTH_INVALID_CREDENTIALS;
+        } else if (e instanceof AuthException.EmailAlreadyExists) {
+            return ErrorCode.AUTH_EMAIL_ALREADY_EXISTS;
+        } else if (e instanceof AuthException.UsernameAlreadyExists) {
+            return ErrorCode.AUTH_USERNAME_ALREADY_EXISTS;
+        } else if (e instanceof AuthException.InvalidToken) {
+            return ErrorCode.AUTH_INVALID_TOKEN;
+        } else if (e instanceof AuthException.TokenExpired) {
+            return ErrorCode.AUTH_TOKEN_EXPIRED;
+        } else if (e instanceof AuthException.UserInactive) {
+            return ErrorCode.AUTH_USER_INACTIVE;
+        } else if (e instanceof AuthException.EmailNotVerified) {
+            return ErrorCode.AUTH_EMAIL_NOT_VERIFIED;
+        } else {
+            return ErrorCode.INTERNAL_SERVER_ERROR;
+        }
     }
     
     // ===== Spring Validation Exception 처리 =====
