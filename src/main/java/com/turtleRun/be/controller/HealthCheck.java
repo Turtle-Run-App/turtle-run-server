@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("api/")
 public class HealthCheck {
-    @GetMapping("healthCheck")
+    @GetMapping("")
     public String healthCheck() {
         return "success!!!! in " + LocalDateTime.now();
     }

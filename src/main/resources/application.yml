@@ -2,6 +2,9 @@ server:
   port: 8081
 
 spring:
+  sql:
+    init:
+      mode: always
   datasource:
     url: jdbc:postgresql://localhost:5432/turtle-run-app-db
     username: turtle-run-app-db
@@ -13,6 +16,22 @@ spring:
     show-sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: true
+
+# Swagger 설정
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  packages-to-scan: com.turtleRun.be.controller
+
+# JWT 설정
+jwt:
+  secret: turtleRunSecretKeyForJWTTokenGeneration2024
+  expiration: 86400000 # 24시간 (밀리초)

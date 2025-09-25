@@ -29,11 +29,24 @@ dependencies {
 	//runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.mockito:mockito-inline:5.2.0'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
+	// Swagger 3 (OpenAPI 3) - API 문서화 및 테스트
+	//implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+
+	// JWT 관련 의존성
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	// Validation 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	//postgresql
 	implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.2'
@@ -42,6 +55,14 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	
+	// Mockito agent 설정 추가
+	doFirst {
+		def mockitoCore = configurations.testRuntimeClasspath.find { it.name.contains('mockito-core') }
+		if (mockitoCore) {
+			jvmArgs += "-javaagent:${mockitoCore.absolutePath}"
+		}
+	}
 }
 
 
